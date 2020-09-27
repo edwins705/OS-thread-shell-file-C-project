@@ -1,0 +1,12 @@
+Project3 Issues:
+
+Past tests 1-10 but not tests 11-13. The sem_init and sem_destroy works properly. However, the sem_wait and sem_post, though it works in the code I've done in the main funciton. doesn't past the tests in the EC 440 server. 
+
+As for the functions and how they work:
+sem_init: initializes the flag, queue, and value and store reference in __align.
+
+sem_destroy: frees sem
+
+sem_wait: decerements semaphore value only if the value is >0 and block the current thread if value==0 and put it at the front of the queue.
+
+sem_post: increments and if greater than 0, unblock a thread stored in the queue.

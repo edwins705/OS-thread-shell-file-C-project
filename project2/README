@@ -1,0 +1,14 @@
+PRogram works as follows:
+Main.c: contains the count routine, whose address we need for pthread create. We have initialized pthread id list and has a for loop that creates up to 128 threads. After creating the threads, it calls its own count function because main function is also a thread with id 0.
+
+pthread_create: creates the thread by accepting the address of start_routine and the arg, which is cnt=10000000. We have made a TCB struct list, with each struct has member for id, reg, and its status. So the function assigns each thread an id, incremented by createthread. It allocated stack in which it puts the pthread_exit address on top and sets thes status as ready. We setjmp so save the thread context and we alter the jmpbuf so that we put arg into R13, address of start_routine into R12, mangled stack pointer to RSP, and start_thunk address into PC. This way it jumps to thunk first which moves the arg into RDI and jumps into the start_routine function. It saves the variables into the stack we just allocated.
+
+thread_sys_init: This function occurs at the first time it makes a thread. It essentially saves the main thread's context, assign it ID=0, set the status as running, and sets up the timer. The timer is made with the timer struct and have a sigactoin function that jumps to schedule once the alarm is up.
+
+Schedule: It is called everytime a pthread exits or timer is up or every 50 ms. It finds the next available thread that hasn't exited. It saves the previous thread and longjmp into the next thread that's available. 
+
+pthread_exit: The address is put on top of each thread's stack so that once each thread is finished, it jump to pthread_exit. The pthread_exit sets status as EXITED and frees the stack(in this case, we don't). Then it calls schedule
+
+pthread_self: It just returns the id of the thread.
+
+In the end, the start_routine will round robin schedule all 128 threads then it finishe the longest thread last, which is the main thread. 

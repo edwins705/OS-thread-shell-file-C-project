@@ -1,0 +1,15 @@
+Short description of it working: All testcases work except extra credit (didn't have enough time) 
+
+make disk: initializes Fat, dir, fidles, super block and writes it on disk
+mount disk: reads from disk on to computer memory
+un mount disk: writes from computer memory onto disk
+fs_opoen: creates a fildes  entry; assign the struct's data field. most importantly increment ref_cnt and assigns file to dir[head]
+fs_close: zero out the fd entry
+fs_create: creates a new dir entry and creates a corresponding fat entry for it
+fs_write: reads content from disk, modify it with content from buf and offset, and and write it back to disk (some nbyte manipulation and allows extension beyond eof by assigning more FAT entries) (checks if ran out of memory) (updates offset)
+fs_read: reads content from disk at an outset and memcpy to buf (updates offset like fs_write)
+fs_get_filesize: returns size from directory entry
+fs_list_files: set pointer to point to char** of all file names
+file_truncate: update fat array so file fat only points to shorter linked list of blocks
+fs_lseek: set file offset to whatever argument offset is
+

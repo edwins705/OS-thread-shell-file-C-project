@@ -1,0 +1,16 @@
+TLS_create:
+    creates a tls struct for the current thread. I assign its size, page num, and pages. Pages space is made with calloc. The pages is an array of pointer to page struct, each is allocated with calloc and given a ref_count and address. I've checked if the thread does not have a LSA before creation and check if size is greater than 0.
+
+TLs_write: After checking that thread exists, i've go byte by byte in the buffer count and write its content to the corresponding pages of the tls storage given th offset and length. We do COW if ref_count>1
+
+TLs_read: After checking that the thread exists, we copy the contents from the pages of the tls storage to the buffer.
+
+tls_clone: behaves similarly to tls_create. This time we take the contents of target thread and copy it over to the current thread. We copy the page struct data members and we copy over the pages by their addresses. (This will be a shallow copy)
+
+tls_destroy(): it checks if the thread exists before freeing its pointers and reinitializing its data members as zero.
+
+tls_init: set up the signal handler and also initializes all tls structs in the list of tls_struct pointers to be zero.
+
+tls_handle_page_fault: handles in both cases of accessing pages with insufficient permissions or seg faults. We look for the page whose value is equal to the expression defined by p_fault.
+
+rest are helper functions: tls_unprotect, find_tls, get_pages
